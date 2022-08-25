@@ -1,0 +1,14 @@
+@import "../../../mixin.scss";
+
+.message-box {
+  margin: 0 8px !important;
+  font-size: 12px;
+}
+
+.message-red {
+  color: $fg-validation-error;
+}
+
+.message-green {
+  color: $fg-validation-correct;
+}

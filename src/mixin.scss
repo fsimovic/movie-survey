@@ -1,0 +1,18 @@
+$tablet-width: 768px;
+$desktop-width: 1024px;
+
+$fg-shadow: #ffe8ba;
+$fg-validation-error: #ff0000;
+$fg-validation-correct: #32cd32;
+
+@mixin tablet {
+  @media (min-width: #{$tablet-width}) and (max-width: #{$desktop-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$desktop-width}) {
+    @content;
+  }
+}

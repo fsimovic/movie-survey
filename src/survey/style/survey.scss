@@ -1,0 +1,27 @@
+@import "../../mixin.scss";
+
+.box {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin: calc(30vh - 202px) auto 0;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px $fg-shadow;
+  padding: 20px;
+
+  @include tablet {
+    margin-top: calc(50vh - 202px);
+  }
+
+  @include desktop {
+    margin-top: calc(50vh - 202px);
+  }
+}
+
+.text-field {
+  max-width: 25ch;
+}
+
+.rating {
+  width: max-content;
+}
