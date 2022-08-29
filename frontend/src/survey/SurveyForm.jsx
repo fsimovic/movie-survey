@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Rating from "@mui/material/Rating";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ValidationMessage from "./survey-compoents/ValidationMessage";
+import { Get, services } from "../api/surveyApi";
 
 import "./style/survey.scss";
 
@@ -47,6 +48,13 @@ function SurveyForm() {
       console.log("Invalid: ", validation);
     }
   }
+
+  useEffect(() => {
+    // Test
+    Get(services.SURVEY)
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <Box
