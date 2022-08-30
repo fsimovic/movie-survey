@@ -1,121 +1,109 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Rating from "@mui/material/Rating";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import isEmpty from "lodash.isempty";
 import ValidationMessage from "./survey-compoents/ValidationMessage";
+import initialData from "../data/survey";
+import { v4 as uuidv4 } from "uuid";
 import { Get, Post, services } from "../api/surveyApi";
+import {
+  Box,
+  Button,
+  IconButton,
+  Rating,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 
 import "./style/survey.scss";
 
 function SurveyForm() {
-  const [movieValue, setMovieValue] = useState("");
-  const [ratingValue, setRatingValue] = useState(0);
+  const [movie, setMovie] = useState("");
+  const [rating, setRating] = useState(0);
+  const [reviewData, setReviewData] = useState({});
 
   const [validation, setValidation] = useState({
     movie: null,
     rating: null,
   });
 
-  // eslint-disable-next-line no-unused-vars
-  const [data, setData] = useState({
-    answers: [
-      {
-        questionId: "film",
-        answer: "",
-      },
-      {
-        questionId: "review",
-        answer: "",
-      },
-    ],
-  });
-
-  function checkValidaton() {
-    if (!movieValue || !ratingValue) {
-      setValidation({ movie: !!movieValue, rating: !!ratingValue });
+  function validate() {
+    if (!movie || !rating) {
+      setValidation({ movie: !!movie, rating: !!rating });
       return false;
     }
     return true;
   }
 
-  function sendForm() {
-    const valid = checkValidaton();
+  function send() {
+    const valid = validate();
     if (valid) {
-      // Send request
-      console.log("Valid!");
-    } else {
-      console.log("Invalid: ", validation);
+      const payload = initialData(movie, rating);
+      Post(services.SURVEY, payload, uuidv4())
+        .then((res) => console.log(res.data))
+        .catch((err) => console.log(err.response.data));
     }
   }
 
   useEffect(() => {
-    // Test
-    const testData = {
-      data: {
-        type: "surveyAnswers",
-        attributes: {
-          answers: [
-            {
-              questionId: "film",
-              answer: "Rocky Horror Picture Show",
-            },
-            {
-              questionId: "review",
-              answer: 5,
-            },
-          ],
-        },
-      },
-    };
     Get(services.SURVEY)
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        const { title, description, questions } = res.data.data.attributes;
+        setReviewData({ title, description, questions: [...questions] });
+      })
       .catch((err) => console.log(err));
-    Post(services.SURVEY, testData, "some-random-id-string")
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err.response.data));
   }, []);
 
   return (
-    <Box
-      className="box"
-      component="form"
-      sx={{
-        "& > :not(style)": { m: 1 },
-      }}
-      noValidate
-      autoComplete="off"
-    >
-      <h2>Movie Survey</h2>
-      <p>Thank you for participating in the film festival!</p>
-      <p>Please fill out this short survey so we can record your feedback.</p>
-      <TextField
-        id="standard-basic"
-        className="text-field"
-        label="What film did you watch?"
-        variant="standard"
-        value={movieValue}
-        onChange={(event) => setMovieValue(event.target.value)}
-      />
-      {validation.movie !== null && (
-        <ValidationMessage correct={!!validation.movie} />
-      )}
-      <Rating
-        name="simple-controlled"
-        className="rating"
-        value={ratingValue}
-        onChange={(_event, newValue) => {
-          setValidation(validation, { ...validation, rating: newValue });
-          setRatingValue(newValue);
+    !isEmpty(reviewData) && (
+      <Box
+        className="box"
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 1 },
         }}
-      />
-      {validation.rating !== null && (
-        <ValidationMessage correct={!!validation.rating} />
-      )}
-      <Button variant="contained" onClick={() => sendForm()}>
-        Submit
-      </Button>
-    </Box>
+        noValidate
+        autoComplete="off"
+      >
+        <h2>{reviewData.title}</h2>
+        <div dangerouslySetInnerHTML={{ __html: reviewData.description }}></div>
+        <TextField
+          id="standard-basic"
+          className="text-field"
+          label={reviewData.questions[0].label}
+          variant="standard"
+          value={movie}
+          onChange={(event) => setMovie(event.target.value)}
+        />
+        {validation.movie !== null && (
+          <ValidationMessage correct={!!validation.movie} />
+        )}
+        <div className="tooltip-component">
+          <Rating
+            name="simple-controlled"
+            className="rating-stars"
+            value={rating}
+            onChange={(_event, newValue) => {
+              setValidation(validation, { ...validation, rating: newValue });
+              setRating(newValue);
+            }}
+          />
+          <Tooltip
+            title={reviewData.questions[1].label}
+            className="tooltip-rating"
+          >
+            <IconButton>
+              <HelpRoundedIcon color="disabled" />
+            </IconButton>
+          </Tooltip>
+        </div>
+        {validation.rating !== null && (
+          <ValidationMessage correct={!!validation.rating} />
+        )}
+        <Button variant="contained" onClick={() => send()}>
+          Submit
+        </Button>
+      </Box>
+    )
   );
 }
 

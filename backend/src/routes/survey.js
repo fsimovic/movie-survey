@@ -6,6 +6,7 @@ import {
   relationships,
 } from "../data/survey.js";
 import validateSurvey from "../middleware/InputValidation.js";
+import { v4 as uuidv4 } from "uuid";
 
 const router = Router();
 
@@ -29,9 +30,10 @@ router.post("/:id/answers", async (req, res) => {
   try {
     const { error, value } = validateSurvey(req.body);
     if (error) {
-      console.log(`/${req.params.body}/answers - `, error);
+      console.log(`/${req.params.id}/answers - `, error);
       return res.status(422).send(validationFailed);
     }
+    value.data.id = uuidv4();
     res.status(201).send(Object.assign(value, relationships(req.params.id)));
   } catch (error) {
     console.log(`/${req.params.body}/answers - `, error);
