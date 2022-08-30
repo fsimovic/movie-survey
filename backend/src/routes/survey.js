@@ -3,6 +3,7 @@ import {
   validationFailed,
   initialData,
   internalServerError,
+  pageNotFound,
   relationships,
 } from "../data/survey.js";
 import validateSurvey from "../middleware/InputValidation.js";
@@ -39,6 +40,10 @@ router.post("/:id/answers", async (req, res) => {
     console.log(`/${req.params.body}/answers - `, error);
     res.status(500).send(internalServerError);
   }
+});
+
+router.get("*", function (req, res) {
+  res.status(404).send(pageNotFound);
 });
 
 export default router;

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import isEmpty from "lodash.isempty";
 import ValidationMessage from "./survey-compoents/ValidationMessage";
 import initialData from "../data/survey";
+import { successMsg } from "../data/afterFormMessages";
 import { v4 as uuidv4 } from "uuid";
 import { Get, Post, services } from "../api/surveyApi";
 import {
@@ -16,7 +18,7 @@ import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 
 import "./style/survey.scss";
 
-function SurveyForm() {
+function SurveyForm({ setStatus }) {
   const [movie, setMovie] = useState("");
   const [rating, setRating] = useState(0);
   const [reviewData, setReviewData] = useState({});
@@ -39,8 +41,18 @@ function SurveyForm() {
     if (valid) {
       const payload = initialData(movie, rating);
       Post(services.SURVEY, payload, uuidv4())
-        .then((res) => console.log(res.data))
-        .catch((err) => console.log(err.response.data));
+        .then((res) => {
+          const { title, detail } = successMsg;
+          setStatus({
+            code: res.status,
+            title,
+            detail,
+          });
+        })
+        .catch((err) => {
+          const { title, detail } = err.response.data.errors[0];
+          setStatus({ code: err.response.code, title, detail });
+        });
     }
   }
 
@@ -50,7 +62,10 @@ function SurveyForm() {
         const { title, description, questions } = res.data.data.attributes;
         setReviewData({ title, description, questions: [...questions] });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        const { title, detail } = err.response.data.errors[0];
+        setStatus({ code: err.response.status, title, detail });
+      });
   }, []);
 
   return (
@@ -106,5 +121,9 @@ function SurveyForm() {
     )
   );
 }
+
+SurveyForm.propTypes = {
+  setStatus: PropTypes.func,
+};
 
 export default SurveyForm;

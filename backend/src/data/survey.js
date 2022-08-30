@@ -63,3 +63,12 @@ export const internalServerError = {
     },
   ],
 };
+
+export const pageNotFound = {
+  errors: [
+    {
+      title: "Page Not Found",
+      detail: "The requested URL was not found on this server.",
+    },
+  ],
+};
