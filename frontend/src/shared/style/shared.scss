@@ -5,9 +5,17 @@
   flex-direction: column;
   align-items: center;
   max-width: 600px;
-  margin: calc(65vh - 202px) auto 0;
+  margin: 70px 20px;
   border-radius: 14px;
   box-shadow: 0 10px 30px $fg-shadow;
+
+  @include tablet {
+    margin: calc(65vh - 202px) auto 0;
+  }
+
+  @include desktop {
+    margin: calc(65vh - 202px) auto 0;
+  }
 }
 
 .container-detail {
