@@ -34,7 +34,7 @@ export const Get = (service, param) => {
 export const Post = (service, data, param) => {
   let url;
 
-  if (param) url = `${service}/${param}`;
+  if (param) url = `${service}/${param}/answers`;
   else url = `${service}`;
 
   return axios.post(url, data);

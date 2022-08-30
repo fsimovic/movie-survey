@@ -4,7 +4,7 @@ import Rating from "@mui/material/Rating";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ValidationMessage from "./survey-compoents/ValidationMessage";
-import { Get, services } from "../api/surveyApi";
+import { Get, Post, services } from "../api/surveyApi";
 
 import "./style/survey.scss";
 
@@ -51,9 +51,29 @@ function SurveyForm() {
 
   useEffect(() => {
     // Test
+    const testData = {
+      data: {
+        type: "surveyAnswers",
+        attributes: {
+          answers: [
+            {
+              questionId: "film",
+              answer: "Rocky Horror Picture Show",
+            },
+            {
+              questionId: "review",
+              answer: 5,
+            },
+          ],
+        },
+      },
+    };
     Get(services.SURVEY)
       .then((res) => console.log(res.data))
       .catch((err) => console.log(err));
+    Post(services.SURVEY, testData, "some-random-id-string")
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err.response.data));
   }, []);
 
   return (
