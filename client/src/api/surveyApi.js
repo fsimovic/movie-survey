@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const ROOT_URL = "http://localhost:8000/api/v1/survey";
+const ROOT_URL = `${process.env.REACT_APP_API_BASE_URL}/api/v1/survey`;
 
 /**
  * @SURVEY : Endpoint for getting the survey

@@ -1,0 +1,33 @@
+version: "3.8"
+
+x-common-variables: &common-variables
+  REACT_APP_API_BASE_URL: http://localhost:8000
+
+services:
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: "./server"
+    restart: unless-stopped
+    env_file: ./server/.env
+    ports:
+      - 8000:8000
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+  client:
+    stdin_open: true
+    env_file: ./client/.env
+    environment:
+      <<: *common-variables
+      REACT_APP_API_BASE_URL: http://localhost:8000
+    ports:
+      - 3000:3000
+    build:
+      dockerfile: Dockerfile
+      context: ./client
+      args:
+        - REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+    volumes:
+      - /app/node_modules
+      - ./client:/app
